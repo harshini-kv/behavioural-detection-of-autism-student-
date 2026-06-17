@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Emotion & Behaviour Support – Autism</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Bootstrap 5 CDN for clean layout -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      background-color: #f5f7fb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      
+    }
+
+    .app-header {
+      background: linear-gradient(90deg, #4e73df, #1cc88a);
+      color: #fff;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .emotion-label {
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .status-calm { background-color: #1cc88a; }
+    .status-alert { background-color: #e74a3b; }
+    .status-neutral { background-color: #858796; }
+
+    #video {
+      width: 100%;
+      border-radius: 0.5rem;
+      background: #000;
+    }
+
+    #emotion-history {
+      max-height: 260px;
+      overflow-y: auto;
+      font-size: 0.9rem;
+    }
+
+    .support-tag {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      margin: 0.15rem;
+      border-radius: 999px;
+      background-color: #e3f2fd;
+      color: #1565c0;
+      font-size: 0.8rem;
+    }
+
+    .small-label {
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+
+    footer {
+      font-size: 0.8rem;
+      color: #999;
+      padding: 0.5rem 1rem;
+      text-align: center;
+    }
+
+    .card-title {
+      font-weight: 600;
+    }
+
+    .badge-emotion {
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .behaviour-card ul {
+      padding-left: 1.2rem;
+    }
+    /* -----------------------------
+   UI ENHANCEMENT – ADDITIONAL CSS
+------------------------------ */
+
+/* Smooth global feel */
+* {
+  transition: all 0.25s ease-in-out;
+}
+
+/* Glassmorphism cards */
+.card {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 1rem !important;
+}
+
+/* Header animation */
+.app-header {
+  background-size: 300% 300%;
+  animation: headerFlow 8s ease infinite;
+}
+
+@keyframes headerFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Emotion glow effects */
+.status-calm {
+  box-shadow: 0 0 12px rgba(28, 200, 138, 0.7);
+}
+
+.status-alert {
+  box-shadow: 0 0 12px rgba(231, 74, 59, 0.7);
+}
+
+.status-neutral {
+  box-shadow: 0 0 10px rgba(133, 135, 150, 0.6);
+}
+
+/* Emotion text animation */
+.emotion-label {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Video frame highlight */
+#video {
+  border: 3px solid #4e73df;
+  box-shadow: 0 8px 20px rgba(78, 115, 223, 0.3);
+}
+
+/* Buttons hover */
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+/* Emotion history animation */
+#emotion-history > div {
+  animation: fadeSlide 0.4s ease;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Support list styling */
+.behaviour-card li {
+  margin-bottom: 0.4rem;
+  padding-left: 0.4rem;
+  border-left: 3px solid #4e73df;
+}
+
+/* Visual support tags hover */
+.support-tag:hover {
+  background-color: #1565c0;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Footer subtle */
+footer {
+  background: linear-gradient(to right, #f8f9fc, #eef1f8);
+}
+
+/* Mobile friendly */
+@media (max-width: 768px) {
+  .emotion-label {
+    font-size: 1.5rem;
+  }
+}
+/* ================================
+   SAFE & WORKING BACKGROUND STYLE
+================================ */
+
+/* Layered calming gradient */
+body {
+  background:
+    linear-gradient(120deg, #f5f7fb 0%, #eef2ff 50%, #e8f9f3 100%);
+  background-attachment: fixed;
+}
+
+/* Add depth using container shadow */
+main.container-fluid {
+  background: transparent;
+  padding: 1rem;
+}
+
+/* Soft background pattern using box-shadow trick */
+.container-fluid::before {
+  content: "";
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(78,115,223,0.03) 0,
+      rgba(78,115,223,0.03) 1px,
+      transparent 1px,
+      transparent 40px
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ensure content stays above pattern */
+.container-fluid > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Gentle glow behind cards */
+.card {
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.08),
+    inset 0 0 0 rgba(255,255,255,0.2);
+}
+
+/* Section distinction */
+.col-lg-6 {
+  padding-bottom: 1rem;
+}
+/* =====================================
+   ANIMATED BACKGROUND – SAFE VERSION
+===================================== */
+
+body {
+  background: linear-gradient(
+    -45deg,
+    #f5f7fb,
+    #e8f0ff,
+    #e6fff6,
+    #f0f4ff
+  );
+  background-size: 400% 400%;
+  animation: gradientBG 18s ease infinite;
+}
+
+/* Animation keyframes */
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Add depth so cards stand out */
+main.container-fluid {
+  background: transparent;
+  position: relative;
+  z-index: 1;
+}
+
+/* Smooth floating effect for cards */
+.card {
+  animation: floatCard 6s ease-in-out infinite;
+}
+
+/* Slight variation so cards don't move together */
+.card:nth-child(2) { animation-delay: 1s; }
+.card:nth-child(3) { animation-delay: 2s; }
+
+@keyframes floatCard {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
+
+/* Calm animation for header */
+.app-header {
+  animation: headerGlow 6s ease-in-out infinite alternate;
+}
+
+@keyframes headerGlow {
+  from {
+    box-shadow: 0 0 10px rgba(78,115,223,0.4);
+  }
+  to {
+    box-shadow: 0 0 25px rgba(28,200,138,0.6);
+  }
+}
+/* ===============================
+   GLOBAL STYLES
+================================ */
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: linear-gradient(
+    -45deg,
+    #f5f7fb,
+    #e8f0ff,
+    #e6fff6,
+    #f0f4ff
+  );
+  background-size: 400% 400%;
+  animation: gradientBG 18s ease infinite;
+  margin: 0;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ===============================
+   HEADER
+================================ */
+
+.app-header {
+  background: linear-gradient(90deg, #4e73df, #1cc88a);
+  color: #fff;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  animation: headerGlow 6s ease-in-out infinite alternate;
+}
+
+@keyframes headerGlow {
+  from { box-shadow: 0 0 10px rgba(78,115,223,0.4); }
+  to   { box-shadow: 0 0 25px rgba(28,200,138,0.6); }
+}
+
+/* ===============================
+   CONTAINER
+================================ */
+
+main.container-fluid {
+  background: transparent;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===============================
+   CARD (TABS)
+================================ */
+
+.card {
+  position: relative;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: floatCard 6s ease-in-out infinite;
+}
+
+/* Floating animation */
+@keyframes floatCard {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
+
+/* Hop on hover */
+.card:hover {
+  animation: hop 0.6s ease;
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.18);
+}
+
+@keyframes hop {
+  0%   { transform: translateY(0); }
+  30%  { transform: translateY(-12px); }
+  60%  { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
+/* ===============================
+   TAB BACKGROUND COLORS
+================================ */
+
+/* Tab 1 */
+.col-lg-6:first-child .card:nth-child(1) {
+  background: linear-gradient(135deg, #e8f0ff, #f5f9ff);
+  border-left: 6px solid #4e73df;
+}
+
+/* Tab 2 */
+.col-lg-6:first-child .card:nth-child(2) {
+  background: linear-gradient(135deg, #e6fff6, #f4fffb);
+  border-left: 6px solid #1cc88a;
+}
+
+/* Tab 3 */
+.col-lg-6:last-child .card:nth-child(1) {
+  background: linear-gradient(135deg, #fff0f0, #fff7f7);
+  border-left: 6px solid #e74a3b;
+}
+
+/* Tab 4 */
+.col-lg-6:last-child .card:nth-child(2) {
+  background: linear-gradient(135deg, #f4f4f4, #ffffff);
+  border-left: 6px solid #858796;
+}
+
+/* ===============================
+   SAFE OVERLAY (FIXED)
+================================ */
+
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.35),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+
+  /* 🔥 MOST IMPORTANT FIX */
+  pointer-events: none;
+}
+
+.card:hover::after {
+  opacity: 1;
+}
+
+/* ===============================
+   BUTTON FIX (IMPORTANT)
+================================ */
+
+.card button,
+.card a {
+  position: relative;
+  z-index: 5;
+}
+
+/* ===============================
+   TEXT
+================================ */
+
+.card-title {
+  letter-spacing: 0.3px;
+}
+
+  </style>
+</head>
+<body>
+  <!-- Top header -->
+  <header class="app-header d-flex justify-content-between align-items-center">
+    <div>
+      <h1 class="h4 mb-0">AI Emotion & Behaviour Support</h1>
+      <p class="mb-0 small">
+        Real‑time support system for Autism students – demo interface.
+      </p>
+    </div>
+    <div class="text-end">
+      <div class="small">Mode: <span class="fw-semibold">Teacher / Caregiver</span></div>
+      <div class="small">Status: <span class="badge bg-light text-dark">Live Monitoring</span></div>
+    </div>
+  </header>
+
+  <main class="container-fluid mb-4">
+    <div class="row g-3">
+      <!-- Left: Live monitoring -->
+      <div class="col-lg-6">
+        <div class="card shadow-sm mb-3">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h2 class="card-title h5 mb-0">Live Emotion Monitoring</h2>
+              <span id="sessionStatus" class="badge bg-success">Ready</span>
+            </div>
+            <p class="small-label mb-2">
+              Allow camera access, then press <strong>Start Monitoring</strong>. The system simulates emotion detection and support suggestions.
+            </p>
+
+            <div class="row g-3">
+              <div class="col-md-7">
+                <video id="video" autoplay playsinline></video>
+                <!-- Hidden canvas for processing frame (if connecting real model) -->
+                <canvas id="hiddenCanvas" style="display:none;"></canvas>
+
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                  <button id="startBtn" class="btn btn-primary btn-sm">
+                    Start Monitoring
+                  </button>
+                  <button id="stopBtn" class="btn btn-outline-secondary btn-sm" disabled>
+                    Stop Monitoring
+                  </button>
+                  <button id="snapshotBtn" class="btn btn-outline-primary btn-sm" disabled>
+                    Take Snapshot (Log)
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-md-5">
+                <h3 class="h6 mb-2">Current Emotional State</h3>
+                <div class="border rounded p-3 mb-3 bg-white">
+                  <div id="emotionLabel" class="emotion-label mb-1">Neutral</div>
+                  <div id="emotionIntensity" class="small mb-1 text-muted">
+                    Intensity: Low
+                  </div>
+                  <div id="emotionStatusPill" class="status-pill status-neutral">
+                    Stable
+                  </div>
+                </div>
+
+                <div>
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="h6 mb-0">Immediate Support</span>
+                    <span class="badge bg-info text-dark badge-emotion" id="supportEmotionTag">NEUTRAL</span>
+                  </div>
+                  <p class="small-label mb-2">
+                    Suggested supports tailored for Autism students to regain comfort and focus.
+                  </p>
+                  <ul id="supportList" class="mb-0 small behaviour-card">
+                    <!-- Filled by JS -->
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick visual supports -->
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h3 class="card-title h6 mb-2">Send Feedback</h3>
+            <p class="small-label mb-2">
+              Rate & comment on today's support (takes 10 seconds).
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+              <div class="mt-3">
+  <a href="feedback.html" class="btn btn-primary btn-sm">
+    Open Feedback Form
+  </a>
+</div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Monitoring dashboard -->
+      <div class="col-lg-6">
+        <div class="card shadow-sm mb-3">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h2 class="card-title h5 mb-0">Emotion Monitoring Dashboard</h2>
+              <span class="badge bg-secondary" id="totalEventsBadge">Events: 0</span>
+            </div>
+            <p class="small-label mb-2">
+              Log of recent emotional states per session to help identify patterns and early intervention needs.
+            </p>
+
+            <div id="emotion-history" class="border rounded bg-white p-2">
+              <!-- History items inserted here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Simple pattern summary -->
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h3 class="card-title h6 mb-2">Session Summary (Local Only)</h3>
+            <p class="small-label mb-2">
+              Counts of each detected emotion in this browser session. Data resets on page refresh.
+            </p>
+            <div class="row g-2" id="summaryCards">
+              <!-- Summary cards (counts) inserted here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    Demo UI only – plug in a real TensorFlow.js / face‑api.js emotion model for production use. [web:4][web:12]
+  </footer>
+
+  <script>
+    // ----------------------------
+    // Configuration
+    // ----------------------------
+
+    // Emotion labels the system can detect (demo).
+    const EMOTIONS = [
+      "Happy",
+      "Calm",
+      "Neutral",
+      "Anxious",
+      "Stressed",
+      "Frustrated",
+      "Sad"
+    ];
+
+    // Behaviour support strategies for each emotion – Autism‑friendly.
+    const SUPPORT_STRATEGIES = {
+      "Happy": [
+        "Give specific praise and reinforce the positive behaviour.",
+        "Offer a preferred activity as a small reward.",
+        "Encourage sharing the success with a peer or family member."
+      ],
+      "Calm": [
+        "Maintain the current routine and low‑sensory environment.",
+        "Offer a choice of quiet, structured tasks.",
+        "Use visual schedule to prepare for the next transition."
+      ],
+      "Neutral": [
+        "Check in using a simple feelings scale or visual card.",
+        "Use short, clear instructions for the next task.",
+        "Offer a quick choice to keep the student engaged."
+      ],
+      "Anxious": [
+        "Reduce sensory input: dim lights, lower noise, reduce demands.",
+        "Offer deep‑pressure tools (weighted cushion, fidget) if available.",
+        "Use calm breathing visuals and reassure about what happens next."
+      ],
+      "Stressed": [
+        "Pause academic demands and allow a quiet break space.",
+        "Use visual timer to show how long the break will last.",
+        "Reduce verbal language; use simple visuals or gestures."
+      ],
+      "Frustrated": [
+        "Acknowledge feelings: “I see this is hard for you.”",
+        "Offer help or a simpler step of the task.",
+        "Give a safe way to request a break or different activity."
+      ],
+      "Sad": [
+        "Use gentle tone and check if the student needs comfort.",
+        "Offer a preferred calming activity or sensory tool.",
+        "Use visual choice: ‘Talk to adult’ or ‘Quiet time’."
+      ]
+    };
+
+    // ----------------------------
+    // DOM references
+    // ----------------------------
+    const video = document.getElementById("video");
+    const hiddenCanvas = document.getElementById("hiddenCanvas");
+
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const snapshotBtn = document.getElementById("snapshotBtn");
+
+    const emotionLabel = document.getElementById("emotionLabel");
+    const emotionIntensity = document.getElementById("emotionIntensity");
+    const emotionStatusPill = document.getElementById("emotionStatusPill");
+    const supportList = document.getElementById("supportList");
+    const supportEmotionTag = document.getElementById("supportEmotionTag");
+
+    const emotionHistory = document.getElementById("emotion-history");
+    const totalEventsBadge = document.getElementById("totalEventsBadge");
+    const sessionStatus = document.getElementById("sessionStatus");
+    const summaryCardsContainer = document.getElementById("summaryCards");
+
+    // ----------------------------
+    // State
+    // ----------------------------
+    let stream = null;
+    let monitoringInterval = null;
+    let eventCount = 0;
+    const emotionCounts = {};
+
+    EMOTIONS.forEach(e => (emotionCounts[e] = 0));
+
+    // ----------------------------
+    // Camera setup
+    // ----------------------------
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        video.srcObject = stream;
+        sessionStatus.textContent = "Camera ON";
+        sessionStatus.className = "badge bg-success";
+      } catch (err) {
+        console.error("Camera error:", err);
+        sessionStatus.textContent = "Camera blocked/unavailable";
+        sessionStatus.className = "badge bg-danger";
+        alert("Unable to access camera. Please allow permission or use a device with a camera.");
+      }
+    }
+
+    function stopCamera() {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+        sessionStatus.textContent = "Camera OFF";
+        sessionStatus.className = "badge bg-secondary";
+      }
+    }
+
+    // ----------------------------
+    // Emotion detection (demo)
+    // ----------------------------
+    /*
+      In a real system, this function would:
+        1. Draw the current video frame to hiddenCanvas.
+        2. Preprocess the image (resize, grayscale, normalize).
+        3. Run it through a TensorFlow.js / face‑api.js model.
+        4. Return the predicted emotion + confidence score.
+
+      Here we simulate detection by randomly picking an emotion every few seconds.
+    */
+    function simulateEmotionDetection() {
+      const randomIndex = Math.floor(Math.random() * EMOTIONS.length);
+      const emotion = EMOTIONS[randomIndex];
+
+      // Confidence / intensity simulated
+      const intensityLevels = ["Low", "Medium", "High"];
+      const intensity = intensityLevels[Math.floor(Math.random() * intensityLevels.length)];
+
+      return { emotion, intensity };
+    }
+
+    function updateEmotionUI(emotion, intensity) {
+      emotionLabel.textContent = emotion;
+      emotionIntensity.textContent = "Intensity: " + intensity;
+
+      // Update status pill based on emotion category
+      let pillText = "Stable";
+      let pillClass = "status-pill status-neutral";
+
+      if (emotion === "Happy" || emotion === "Calm") {
+        pillText = "Comfortable";
+        pillClass = "status-pill status-calm";
+      } else if (emotion === "Neutral") {
+        pillText = "Stable";
+        pillClass = "status-pill status-neutral";
+      } else {
+        pillText = "Needs Support";
+        pillClass = "status-pill status-alert";
+      }
+
+      emotionStatusPill.textContent = pillText;
+      emotionStatusPill.className = pillClass;
+
+      // Update support suggestions
+      const supports = SUPPORT_STRATEGIES[emotion] || [];
+      supportEmotionTag.textContent = emotion.toUpperCase();
+
+      supportList.innerHTML = "";
+      supports.forEach(text => {
+        const li = document.createElement("li");
+        li.textContent = text;
+        supportList.appendChild(li);
+      });
+    }
+
+    // ----------------------------
+    // Dashboard & history
+    // ----------------------------
+    function addHistoryEntry(emotion, intensity, source) {
+      eventCount += 1;
+      emotionCounts[emotion] = (emotionCounts[emotion] || 0) + 1;
+      totalEventsBadge.textContent = "Events: " + eventCount;
+
+      const entry = document.createElement("div");
+      entry.className =
+        "d-flex justify-content-between align-items-start border-bottom py-1";
+
+      const left = document.createElement("div");
+      const right = document.createElement("div");
+
+      const emotionSpan = document.createElement("span");
+      emotionSpan.className = "fw-semibold me-1";
+      emotionSpan.textContent = emotion + " ";
+
+      const intensitySpan = document.createElement("span");
+      intensitySpan.className = "badge bg-light text-dark";
+      intensitySpan.textContent = intensity;
+
+      const meta = document.createElement("div");
+      meta.className = "small text-muted";
+      const time = new Date().toLocaleTimeString();
+      meta.textContent = time + " • " + source;
+
+      left.appendChild(emotionSpan);
+      left.appendChild(intensitySpan);
+      left.appendChild(document.createElement("br"));
+      left.appendChild(meta);
+
+      const status = document.createElement("span");
+      status.className =
+        emotion === "Happy" || emotion === "Calm"
+          ? "badge bg-success"
+          : emotion === "Neutral"
+          ? "badge bg-secondary"
+          : "badge bg-danger";
+      status.textContent =
+        emotion === "Happy" || emotion === "Calm"
+          ? "Comfortable"
+          : emotion === "Neutral"
+          ? "Stable"
+          : "Needs support";
+
+      right.appendChild(status);
+
+      entry.appendChild(left);
+      entry.appendChild(right);
+
+      // Newest at top
+      emotionHistory.prepend(entry);
+
+      updateSummaryCards();
+    }
+
+    function updateSummaryCards() {
+      summaryCardsContainer.innerHTML = "";
+      EMOTIONS.forEach(emotion => {
+        const count = emotionCounts[emotion] || 0;
+
+        const col = document.createElement("div");
+        col.className = "col-6 col-md-4";
+
+        const card = document.createElement("div");
+        card.className =
+          "border rounded p-2 bg-white d-flex flex-column justify-content-between h-100";
+
+        const title = document.createElement("div");
+        title.className = "small fw-semibold";
+        title.textContent = emotion;
+
+        const value = document.createElement("div");
+        value.className = "h5 mb-0";
+        value.textContent = count;
+
+        const tag = document.createElement("div");
+        tag.className = "small text-muted";
+        tag.textContent = "detections";
+
+        card.appendChild(title);
+        card.appendChild(value);
+        card.appendChild(tag);
+        col.appendChild(card);
+        summaryCardsContainer.appendChild(col);
+      });
+    }
+
+    // ----------------------------
+    // Monitoring control
+    // ----------------------------
+    function startMonitoring() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("getUserMedia not supported in this browser. Use a modern browser like Chrome or Edge.");
+        return;
+      }
+
+      startCamera().then(() => {
+        // Start periodic detection simulation (every 5 seconds)
+        if (monitoringInterval) clearInterval(monitoringInterval);
+        monitoringInterval = setInterval(() => {
+          const { emotion, intensity } = simulateEmotionDetection();
+          updateEmotionUI(emotion, intensity);
+          addHistoryEntry(emotion, intensity, "Auto (every 5s)");
+        }, 5000);
+
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        snapshotBtn.disabled = false;
+        sessionStatus.textContent = "Monitoring";
+        sessionStatus.className = "badge bg-success";
+      });
+    }
+
+    function stopMonitoring() {
+      if (monitoringInterval) {
+        clearInterval(monitoringInterval);
+        monitoringInterval = null;
+      }
+      stopCamera();
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      snapshotBtn.disabled = true;
+      sessionStatus.textContent = "Stopped";
+      sessionStatus.className = "badge bg-secondary";
+    }
+
+    function takeSnapshotAndLog() {
+      // In real system, draw current frame to canvas and store or send to backend.
+      const { emotion, intensity } = simulateEmotionDetection();
+      updateEmotionUI(emotion, intensity);
+      addHistoryEntry(emotion, intensity, "Manual snapshot");
+    }
+
+    // ----------------------------
+    // Event listeners
+    // ----------------------------
+    startBtn.addEventListener("click", startMonitoring);
+    stopBtn.addEventListener("click", stopMonitoring);
+    snapshotBtn.addEventListener("click", takeSnapshotAndLog);
+
+    // Initialize summary cards on load
+    updateSummaryCards();
+    function playAlert(emotion) {
+  if (emotion === "Anxious" || emotion === "Stressed") {
+    const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+    audio.play();
+  }
+}
+  </script>
+</body>
+</html>
